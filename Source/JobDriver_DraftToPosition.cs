@@ -16,7 +16,7 @@ namespace DefensivePositions {
 			AddFailCondition(() =>
 				!(
 					pawn.IsColonistPlayerControlled
-					|| pawn.IsColonyMutantPlayerControlled
+					|| pawn.IsColonySubhumanPlayerControlled
 					|| pawn.IsColonyMechPlayerControlled
 				)
 				|| pawn.Downed

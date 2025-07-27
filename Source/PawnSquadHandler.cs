@@ -17,7 +17,7 @@ namespace DefensivePositions {
 		private readonly PawnSquadSelector squadSelector = new PawnSquadSelector();
 
 		internal static bool ViewingWorldMap {
-			get { return WorldRendererUtility.WorldRenderedNow; }
+			get { return WorldRendererUtility.WorldRendered; }
 		}
 
 		public PawnSquadHandler() {
