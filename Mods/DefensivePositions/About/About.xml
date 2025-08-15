@@ -1,18 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<name>Defensive Positions</name>
-	<author>UnlimitedHugs</author>
+	<name>Defensive Positions - Forked</name>
+	<author>GonDragon</author>
 	<supportedVersions>
-		<li>1.0</li>
-		<li>1.1</li>
-		<li>1.2</li>
-		<li>1.3</li>
-		<li>1.4</li>
-		<li>1.5</li>
 		<li>1.6</li>
 	</supportedVersions>
-	<url>https://ludeon.com/forums/index.php?topic=25535.0</url>
-	<packageId>UnlimitedHugs.DefensivePositions</packageId>
+	<packageId>GonDragon.DefensivePositions</packageId>
 	<description>Version: 1.14.0
 	
 &lt;size=20&gt;Description&lt;/size&gt;
@@ -41,17 +34,5 @@ Colonists can be assigned to squads for easier selection. To assign, hold the Ct
 There are three other keys on the keypad for quick colonist management: press period to select all colonists on the map, undraft everyone by pressing divide, and press zero to send all colonists to their assigned defensive position.
 In the Options &gt; Mod Options window you can switch the Shift key from saving positions to queuing movement orders.
 	</description>
-	<modIconPath IgnoreIfNoMatchingField="True">DefensivePositionsModIcon</modIconPath>
-	<modDependencies>
-		<li>
-			<packageId>UnlimitedHugs.HugsLib</packageId>
-			<displayName>HugsLib</displayName>
-			<downloadUrl>https://github.com/UnlimitedHugs/RimworldHugsLib/releases/latest</downloadUrl>
-			<steamWorkshopUrl>steam://url/CommunityFilePage/818773962</steamWorkshopUrl>
-		</li>
-	</modDependencies>
-	<loadAfter>
-		<li>UnlimitedHugs.HugsLib</li>
-	</loadAfter>
-	
+	<modIconPath IgnoreIfNoMatchingField="True">DefensivePositionsModIcon</modIconPath>	
 </ModMetaData>

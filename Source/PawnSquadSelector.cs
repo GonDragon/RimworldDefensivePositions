@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using HugsLib.Utils;
 using RimWorld.Planet;
 using UnityEngine;
 using Verse;
@@ -29,7 +28,12 @@ namespace DefensivePositions {
 		private IntVec3 lastStartingMapCameraPosition;
 		private int interestPointIndex;
 
-		private static Map CurrentlyViewedMap {
+		private static DefensivePositionsMapComponent CurrentMapComponent
+		{
+			get { return CurrentlyViewedMap?.GetComponent<DefensivePositionsMapComponent>(); }
+        }
+
+        private static Map CurrentlyViewedMap {
 			get { return PawnSquadHandler.ViewingWorldMap ? null : Find.CurrentMap; }
 		}
 
@@ -78,7 +82,7 @@ namespace DefensivePositions {
 		}
 
 		private static IEnumerable<GlobalTargetInfo> EnumerateInterestPoints(IEnumerable<Thing> things, IntVec3 startingPosition) {
-			var sameClusterDistance = DefensivePositionsManager.Instance.SameGroupDistanceSetting.Value;
+			var sameClusterDistance = CurrentMapComponent.SameGroupDistance;
 			var caravans = EnumerateCaravansWithPawns(things).ToArray();
 			var spawnedThings = things.Where(t => t != null && t.Spawned); // spawned things are not part of caravans
 			var spawnedThingsGroupedByMap = spawnedThings.GroupBy(t => t.Map);
@@ -195,16 +199,16 @@ namespace DefensivePositions {
 		}
 
 		private static IEnumerable<Thing> FilterSelectableMembersByDistanceIfNeeded(IEnumerable<Thing> squadMembers, GlobalTargetInfo interestPoint) {
-			var selectOnlyNearJumpTarget = DefensivePositionsManager.Instance.JumpingSelectsNearbySetting.Value;
+			var selectOnlyNearJumpTarget = CurrentMapComponent.JumpingSelectsNearby;
 			if (selectOnlyNearJumpTarget && interestPoint.IsMapTarget) {
-				var maximumSelectionRadius = DefensivePositionsManager.Instance.SameGroupDistanceSetting.Value;
+				var maximumSelectionRadius = CurrentMapComponent.SameGroupDistance;
 				return squadMembers.Where(t => t.Position.DistanceTo(interestPoint.Cell) <= maximumSelectionRadius);
 			}
 			return squadMembers;
 		}
 
 		private static void TrySelectInterestPointSquadMembers(IEnumerable<Thing> squadMembers, GlobalTargetInfo interestPoint) {
-			var additiveSelection = HugsLibUtility.ShiftIsHeld;
+			var additiveSelection = Event.current.shift;
 			if (interestPoint.HasWorldObject) {
 				// current target is a caravan
 				if (!additiveSelection) Find.WorldSelector.ClearSelection();

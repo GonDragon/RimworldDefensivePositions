@@ -1,7 +1,6 @@
-﻿using System;
+﻿using RimWorld;
+using System;
 using System.Collections.Generic;
-using HugsLib.Utils;
-using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -28,7 +27,9 @@ namespace DefensivePositions {
 		private int lastMultiPressSlot;
 		private float positionMoteExpireTime;
 
-		public (bool success, int activatedSlot) TrySendPawnToPositionByHotkey() {
+		private DefensivePositionsMapComponent MapComponent => Owner.Map.GetComponent<DefensivePositionsMapComponent>();
+
+        public (bool success, int activatedSlot) TrySendPawnToPositionByHotkey() {
 			var index = GetHotkeyControlIndex();
 			var success = false;
 			if (HasSavedPosition(index)) {
@@ -39,7 +40,7 @@ namespace DefensivePositions {
 		}
 
 		public Command GetGizmo() {
-			if (DefensivePositionsManager.Instance.AdvancedModeEnabled) {
+			if (MapComponent.AdvancedModeEnabled) {
 				return new Gizmo_QuadButtonPanel {
 					atlasTexture = Resources.Textures.AdvancedButtonAtlas,
 					iconUVsInactive = Resources.Textures.IconUVsInactive,
@@ -68,13 +69,13 @@ namespace DefensivePositions {
 		internal void SetDefensivePosition(int positionIndex) {
 			var targetPos = GetOwnerDestinationOrPosition();
 			SetPosition(positionIndex, targetPos);
-			DefensivePositionsManager.Instance.Reporter.ReportPawnInteraction(ScheduledReportManager.ReportType.SavedPosition, Owner, true, positionIndex);
+			MapComponent.Reporter.ReportPawnInteraction(ScheduledReportManager.ReportType.SavedPosition, Owner, true, positionIndex);
 		}
 
 		internal void DiscardSavedPosition(int controlIndex) {
 			var hadPosition = HasSavedPosition(controlIndex);
 			DiscardPosition(controlIndex);
-			DefensivePositionsManager.Instance.Reporter.ReportPawnInteraction(ScheduledReportManager.ReportType.ClearedPosition, Owner, hadPosition, controlIndex);
+			MapComponent.Reporter.ReportPawnInteraction(ScheduledReportManager.ReportType.ClearedPosition, Owner, hadPosition, controlIndex);
 		}
 
 		private byte GetAdvancedIconActivationMask() {
@@ -96,7 +97,7 @@ namespace DefensivePositions {
 		}
 
 		public void OnAdvancedGizmoClick(int controlIndex) {
-			DefensivePositionsManager.Instance.LastAdvancedControlUsed = controlIndex;
+			MapComponent.LastAdvancedControlUsed = controlIndex;
 			HandleControlInteraction(controlIndex);
 		}
 
@@ -123,17 +124,17 @@ namespace DefensivePositions {
 			if (HasSavedPosition(slotIndex)) {
 				yield return new FloatMenuOption(TranslateWithSuffix("DefPos_context_clearPosition"), () => DiscardSavedPosition(slotIndex));
 			}
-			yield return new FloatMenuOption(TranslateWithSuffix("DefPos_context_toggleAdvanced"), () => DefensivePositionsManager.Instance.ScheduleAdvancedModeToggle());
+			yield return new FloatMenuOption(TranslateWithSuffix("DefPos_context_toggleAdvanced"), () => MapComponent.ScheduleAdvancedModeToggle());
 		}
 
 		private int GetHotkeyControlIndex() {
-			switch (DefensivePositionsManager.Instance.SlotHotkeySetting.Value) {
-				case DefensivePositionsManager.HotkeyMode.FirstSlotOnly:
+			switch (MapComponent.SlotHotkeySetting) {
+				case DefensivePositions.HotkeyMode.FirstSlotOnly:
 					return 0;
-				case DefensivePositionsManager.HotkeyMode.LastUsedSlot:
-					return DefensivePositionsManager.Instance.LastAdvancedControlUsed;
-				case DefensivePositionsManager.HotkeyMode.MultiPress:
-					if (DefensivePositionsManager.Instance.AdvancedModeEnabled && Time.unscaledTime - lastMultiPressTime < HotkeyMultiPressTimeout) {
+				case DefensivePositions.HotkeyMode.LastUsedSlot:
+					return MapComponent.LastAdvancedControlUsed;
+				case DefensivePositions.HotkeyMode.MultiPress:
+					if (MapComponent.AdvancedModeEnabled && Time.unscaledTime - lastMultiPressTime < HotkeyMultiPressTimeout) {
 						lastMultiPressSlot = (lastMultiPressSlot + 1) % NumAdvancedPositionButtons;
 					} else {
 						lastMultiPressSlot = 0;
@@ -146,14 +147,14 @@ namespace DefensivePositions {
 		}
 
 		private void HandleControlInteraction(int controlIndex) {
-			var manager = DefensivePositionsManager.Instance;
-			if (HugsLibUtility.ShiftIsHeld && DefensivePositionsManager.Instance.ShiftKeyModeSetting.Value == DefensivePositionsManager.ShiftKeyMode.AssignSlot) {
+			var manager = MapComponent;
+			if (Event.current.shift && MapComponent.ShiftKeyModeSetting == DefensivePositions.ShiftKeyMode.AssignSlot) {
 				// save new spot
 				SetDefensivePosition(controlIndex);
-			} else if (HugsLibUtility.ControlIsHeld) {
+			} else if (Event.current.control) {
 				// unset saved spot
 				DiscardSavedPosition(controlIndex);
-			} else if (HugsLibUtility.AltIsHeld) {
+			} else if (Event.current.alt) {
 				// switch mode
 				manager.ScheduleAdvancedModeToggle();
 			} else {
@@ -170,7 +171,7 @@ namespace DefensivePositions {
 		private void DraftToPosition(IntVec3 position) {
 			var job = JobMaker.MakeJob(Resources.Jobs.DPDraftToPosition, position);
 			Owner.jobs.TryTakeOrderedJob(job, JobTag.DraftedOrder);
-			DefensivePositionsManager.Instance.ScheduleSoundOnCamera(SoundDefOf.DraftOn);
+			MapComponent.ScheduleSoundOnCamera(SoundDefOf.DraftOn);
 		}
 
 		private void HighlightDefensivePositionLocation(int controlIndex) {

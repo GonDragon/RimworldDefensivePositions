@@ -40,8 +40,9 @@ namespace DefensivePositions {
 			var activatedSlot = 0;
 			foreach (var pawn in GetColonistsOnVisibleMap()) {
 				if (!pawn.IsColonistPlayerControlled || pawn.Downed) continue;
-				var handler = DefensivePositionsManager.Instance.GetHandlerForPawn(pawn);
-				var result = handler.TrySendPawnToPositionByHotkey();
+                var mapComp = pawn.Map.GetComponent<DefensivePositionsMapComponent>();
+                var handler = mapComp.GetOrAddPawnHandler(pawn);
+                var result = handler.TrySendPawnToPositionByHotkey();
 				if (result.success) {
 					hits++;
 				}

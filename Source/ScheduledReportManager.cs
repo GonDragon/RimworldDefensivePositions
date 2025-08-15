@@ -24,10 +24,15 @@ namespace DefensivePositions {
 
 		private ScheduledReport report;
 
-		public void Update() {
+        private readonly DefensivePositionsMapComponent mapComponent;
+        public ScheduledReportManager(DefensivePositionsMapComponent mapComponent) {
+            this.mapComponent = mapComponent;
+        }
+
+        public void Update() {
 			if (report == null) return;
 			if (report.reportType == ReportType.SavedPosition) {
-				if (DefensivePositionsManager.Instance.AdvancedModeEnabled) {
+				if (mapComponent.AdvancedModeEnabled) {
 					Messages.Message(string.Format("DefPos_msg_advancedSet".Translate(), report.controlIndex + 1, report.numPawnsSavedPosition), MessageTypeDefOf.TaskCompletion);
 				} else {
 					Messages.Message(string.Format("DefPos_msg_basicSet".Translate(), report.numPawnsSavedPosition), MessageTypeDefOf.TaskCompletion);
@@ -46,7 +51,7 @@ namespace DefensivePositions {
 				if (report.numPawnsHadTargetPosition == 0) {
 					Messages.Message("DefPos_msg_clearFailed".Translate(), MessageTypeDefOf.RejectInput);
 				} else {
-					if (DefensivePositionsManager.Instance.AdvancedModeEnabled) {
+					if (mapComponent.AdvancedModeEnabled) {
 						Messages.Message("DefPos_msg_advancedCleared".Translate(report.controlIndex + 1, report.numPawnsHadTargetPosition), MessageTypeDefOf.TaskCompletion);
 					} else {
 						Messages.Message("DefPos_msg_basicCleared".Translate(report.numPawnsHadTargetPosition), MessageTypeDefOf.TaskCompletion);

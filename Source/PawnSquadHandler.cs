@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using HugsLib.Utils;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -14,14 +13,18 @@ namespace DefensivePositions {
 		private const int NumSquadHotkeys = 9;
 
 		private readonly List<KeyValuePair<KeyBindingDef, int>> squadKeys = new List<KeyValuePair<KeyBindingDef, int>>();
-		private readonly PawnSquadSelector squadSelector = new PawnSquadSelector();
+		private readonly PawnSquadSelector squadSelector;
 
-		internal static bool ViewingWorldMap {
+		private readonly DefensivePositionsMapComponent mapComponent;
+
+        internal static bool ViewingWorldMap {
 			get { return WorldRendererUtility.WorldRendered; }
 		}
 
-		public PawnSquadHandler() {
-			PrepareSquadHotkeys();
+		public PawnSquadHandler(DefensivePositionsMapComponent mapComponent) {
+			this.mapComponent = mapComponent;
+			squadSelector = new PawnSquadSelector();
+            PrepareSquadHotkeys();
 		}
 
 		public void OnGUI() {
@@ -52,7 +55,7 @@ namespace DefensivePositions {
 		}
 
 		private void ProcessSquadCommand(int squadNumber) {
-			var assignMode = HugsLibUtility.ControlIsHeld;
+			var assignMode = Event.current.control;
 			var squad = TryFindSquad(squadNumber);
 			if (assignMode) {
 				// Control is held, assign pawns to squad
@@ -78,7 +81,7 @@ namespace DefensivePositions {
 		}
 
 		private PawnSquad TryFindSquad(int squadNumber) {
-			var squadsList = DefensivePositionsManager.Instance.SquadData;
+			var squadsList = mapComponent.pawnSquads;
 			for (var i = 0; i < squadsList.Count; i++) {
 				if (squadsList[i].SquadId == squadNumber) {
 					return squadsList[i];
@@ -132,14 +135,14 @@ namespace DefensivePositions {
 			var squad = TryFindSquad(squadNumber);
 			if (squad == null) {
 				squad = new PawnSquad {SquadId = squadNumber};
-				DefensivePositionsManager.Instance.SquadData.Add(squad);
+                mapComponent.pawnSquads.Add(squad);
 			}
 			squad.AssignMembers(members);
 			Messages.Message("DefPos_msg_squadAssigned".Translate(members.Count, squadNumber), MessageTypeDefOf.TaskCompletion);
 		}
 
 		internal void ClearSquad(int squadNumber) {
-			if (DefensivePositionsManager.Instance.SquadData.Remove(TryFindSquad(squadNumber))) {
+			if (mapComponent.pawnSquads.Remove(TryFindSquad(squadNumber))) {
 				Messages.Message("DefPos_msg_squadCleared".Translate(squadNumber), MessageTypeDefOf.TaskCompletion);
 			}
 		}
