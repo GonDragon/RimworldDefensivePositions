@@ -128,7 +128,7 @@ namespace DefensivePositions {
 		}
 
 		private int GetHotkeyControlIndex() {
-			switch (MapComponent.SlotHotkeySetting) {
+			switch (DefensivePositionsSettings.SlotHotkeySetting) {
 				case DefensivePositions.HotkeyMode.FirstSlotOnly:
 					return 0;
 				case DefensivePositions.HotkeyMode.LastUsedSlot:
@@ -148,7 +148,7 @@ namespace DefensivePositions {
 
 		private void HandleControlInteraction(int controlIndex) {
 			var manager = MapComponent;
-			if (Event.current.shift && MapComponent.ShiftKeyModeSetting == DefensivePositions.ShiftKeyMode.AssignSlot) {
+			if (Event.current.shift && DefensivePositionsSettings.ShiftKeyModeSetting == DefensivePositions.ShiftKeyMode.AssignSlot) {
 				// save new spot
 				SetDefensivePosition(controlIndex);
 			} else if (Event.current.control) {

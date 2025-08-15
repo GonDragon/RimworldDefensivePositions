@@ -7,27 +7,39 @@ using Verse;
 
 namespace DefensivePositions
 {
-    public class Settings : ModSettings
+    public class DefensivePositionsSettings : ModSettings
     {
+        public static DefensivePositions.HotkeyMode SlotHotkeySetting;
+        public static DefensivePositions.ShiftKeyMode ShiftKeyModeSetting;
+        public static int SameGroupDistance;
+        public static bool JumpingSelectsNearby;
+
         public override void ExposeData()
         {
-            //Scribe_Values.Look<DefensivePositions.HotkeyMode>(ref DefensivePositions.Instance.SlotHotkeySetting, "SlotHotkey", DefensivePositionsManager.HotkeyMode.FirstSlotOnly);
-            //Scribe_Values.Look<DefensivePositions.ShiftKeyMode>(ref DefensivePositions.Instance.ShiftKeyModeSetting, "ShiftKeyMode", DefensivePositionsManager.ShiftKeyMode.AssignSlot);
+            Scribe_Values.Look<DefensivePositions.HotkeyMode>(ref SlotHotkeySetting, "SlotHotkey", DefensivePositions.HotkeyMode.FirstSlotOnly);
+            Scribe_Values.Look<DefensivePositions.ShiftKeyMode>(ref ShiftKeyModeSetting, "ShiftKeyMode", DefensivePositions.ShiftKeyMode.AssignSlot);
+            Scribe_Values.Look<int>(ref SameGroupDistance, "SameGroupDistance", 30);
+            Scribe_Values.Look<bool>(ref JumpingSelectsNearby, "JumpingSelectsNearby", false);
         }
 
-        public static void RestoreDefault()
+        public void RestoreDefault()
         {
+            SlotHotkeySetting = DefensivePositions.HotkeyMode.FirstSlotOnly;
+            ShiftKeyModeSetting = DefensivePositions.ShiftKeyMode.AssignSlot;
+            SameGroupDistance = 30;
+            JumpingSelectsNearby = false;
 
+            Write();
         }
     }
 
     internal class DefensivePositionsMod : Mod
     {
-        public static Settings settings;
+        public static DefensivePositionsSettings settings;
 
         public DefensivePositionsMod(ModContentPack content) : base(content)
         {
-            settings = GetSettings<Settings>();
+            settings = GetSettings<DefensivePositionsSettings>();
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

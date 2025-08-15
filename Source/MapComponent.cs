@@ -19,13 +19,6 @@ namespace DefensivePositions
             get { return advancedModeEnabled; }
             set { advancedModeEnabled = value; }
         }
-
-        public DefensivePositions.HotkeyMode SlotHotkeySetting;
-        public DefensivePositions.ShiftKeyMode ShiftKeyModeSetting;
-        public int SameGroupDistance;
-        public bool JumpingSelectsNearby;
-        //internal bool VanillaKeyOverriden;
-
         public ScheduledReportManager Reporter { get; }
 
         internal readonly PawnSquadHandler squadHandler;
@@ -41,7 +34,6 @@ namespace DefensivePositions
         internal bool modeSwitchScheduled;
         internal SoundDef scheduledSound;
 
-        // Reemplaza el constructor incorrecto por el correcto
         public DefensivePositionsMapComponent(Map map) : base(map)
         {
             squadHandler = new PawnSquadHandler(this);
@@ -85,8 +77,6 @@ namespace DefensivePositions
                 handler.OnMapDiscarded(map);
             }
         }
-
-        // Porting stuff from WorldData
 
         public List<PawnSquad> pawnSquads = new List<PawnSquad>();
         public List<PawnSquad> PawnSquads
@@ -151,8 +141,6 @@ namespace DefensivePositions
         {
             pawnSquads.RemoveAll(s => s == null || !s.ShouldBeSaved);
         }
-
-        // Stuff to port
 
         // actual switching will occur on next frame- due to possible multiple calls
         public void ScheduleAdvancedModeToggle()
