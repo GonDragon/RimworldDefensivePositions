@@ -82,6 +82,8 @@ namespace DefensivePositions
                 Find.WindowStack.Add((Window)new FloatMenu(options));
             }
 
+            listingStandard.Gap();
+
             if (listingStandard.ButtonTextLabeled("setting_shiftKeyMode_label".Translate(), $"setting_shiftKeyMode_{Settings.ShiftKeyModeSetting}".Translate(), tooltip: "setting_shiftKeyMode_desc".Translate()))
             {
                 List<FloatMenuOption> options = new List<FloatMenuOption>();
@@ -111,7 +113,9 @@ namespace DefensivePositions
 
             listingStandard.CheckboxLabeled("settings_jumpingSelectsNearby_label".Translate(), ref Settings.JumpingSelectsNearby, tooltip: "settings_jumpingSelectsNearby_desc".Translate());
 
+            listingStandard.Gap();
             listingStandard.GapLine();
+            listingStandard.Gap();
 
             if (listingStandard.ButtonTextLabeled("setting_restoreDefault_label".Translate(), "setting_restoreDefault_buttonlabel".Translate(), tooltip: "setting_restoreDefault_desc".Translate()))
             {
