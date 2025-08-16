@@ -33,19 +33,6 @@ namespace DefensivePositions
             Harmony.PatchAll();
         }
 
-        public enum HotkeyMode
-        {
-            FirstSlotOnly,
-            LastUsedSlot,
-            MultiPress
-        }
-
-        public enum ShiftKeyMode
-        {
-            AssignSlot,
-            QueueOrder
-        }
-
         public static void Log(string message) => Verse.Log.Message(PrefixMessage(message));
 
         public static void Warning(string message) => Verse.Log.Warning(PrefixMessage(message));

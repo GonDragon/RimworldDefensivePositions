@@ -82,7 +82,7 @@ namespace DefensivePositions {
 		}
 
 		private static IEnumerable<GlobalTargetInfo> EnumerateInterestPoints(IEnumerable<Thing> things, IntVec3 startingPosition) {
-			var sameClusterDistance = DefensivePositionsSettings.SameGroupDistance;
+			var sameClusterDistance = Settings.SameGroupDistance;
 			var caravans = EnumerateCaravansWithPawns(things).ToArray();
 			var spawnedThings = things.Where(t => t != null && t.Spawned); // spawned things are not part of caravans
 			var spawnedThingsGroupedByMap = spawnedThings.GroupBy(t => t.Map);
@@ -199,9 +199,9 @@ namespace DefensivePositions {
 		}
 
 		private static IEnumerable<Thing> FilterSelectableMembersByDistanceIfNeeded(IEnumerable<Thing> squadMembers, GlobalTargetInfo interestPoint) {
-			var selectOnlyNearJumpTarget = DefensivePositionsSettings.JumpingSelectsNearby;
+			var selectOnlyNearJumpTarget = Settings.JumpingSelectsNearby;
 			if (selectOnlyNearJumpTarget && interestPoint.IsMapTarget) {
-				var maximumSelectionRadius = DefensivePositionsSettings.SameGroupDistance;
+				var maximumSelectionRadius = Settings.SameGroupDistance;
 				return squadMembers.Where(t => t.Position.DistanceTo(interestPoint.Cell) <= maximumSelectionRadius);
 			}
 			return squadMembers;

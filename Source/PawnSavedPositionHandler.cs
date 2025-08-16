@@ -128,12 +128,12 @@ namespace DefensivePositions {
 		}
 
 		private int GetHotkeyControlIndex() {
-			switch (DefensivePositionsSettings.SlotHotkeySetting) {
-				case DefensivePositions.HotkeyMode.FirstSlotOnly:
+			switch (Settings.SlotHotkeySetting) {
+				case Settings.HotkeyMode.FirstSlotOnly:
 					return 0;
-				case DefensivePositions.HotkeyMode.LastUsedSlot:
+				case Settings.HotkeyMode.LastUsedSlot:
 					return MapComponent.LastAdvancedControlUsed;
-				case DefensivePositions.HotkeyMode.MultiPress:
+				case Settings.HotkeyMode.MultiPress:
 					if (MapComponent.AdvancedModeEnabled && Time.unscaledTime - lastMultiPressTime < HotkeyMultiPressTimeout) {
 						lastMultiPressSlot = (lastMultiPressSlot + 1) % NumAdvancedPositionButtons;
 					} else {
@@ -148,7 +148,7 @@ namespace DefensivePositions {
 
 		private void HandleControlInteraction(int controlIndex) {
 			var manager = MapComponent;
-			if (Event.current.shift && DefensivePositionsSettings.ShiftKeyModeSetting == DefensivePositions.ShiftKeyMode.AssignSlot) {
+			if (Event.current.shift && Settings.ShiftKeyModeSetting == Settings.ShiftKeyMode.AssignSlot) {
 				// save new spot
 				SetDefensivePosition(controlIndex);
 			} else if (Event.current.control) {
