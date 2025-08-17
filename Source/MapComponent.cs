@@ -13,26 +13,32 @@ namespace DefensivePositions
 {
     public class DefensivePositionsMapComponent : MapComponent
     {
+        private Dictionary<Pawn, PawnSavedPositionHandler> handlers = new Dictionary<Pawn, PawnSavedPositionHandler>();
+        private List<PawnSavedPositionHandler> tempHandlerSavingList;
+        internal bool modeSwitchScheduled;
+        internal SoundDef scheduledSound;
         public bool advancedModeEnabled;
+        public int lastAdvancedControlUsed;
+        public List<PawnSquad> pawnSquads = new List<PawnSquad>();
+        internal readonly PawnSquadHandler squadHandler;
+        internal readonly MiscHotkeyHandler miscHotkeys;
+
         public bool AdvancedModeEnabled
         {
             get { return advancedModeEnabled; }
             set { advancedModeEnabled = value; }
         }
-        public ScheduledReportManager Reporter { get; }
-
-        internal readonly PawnSquadHandler squadHandler;
-        internal readonly MiscHotkeyHandler miscHotkeys;
-
-        public int lastAdvancedControlUsed;
         public int LastAdvancedControlUsed
         {
             get { return lastAdvancedControlUsed; }
             set { lastAdvancedControlUsed = value; }
-        }       
-
-        internal bool modeSwitchScheduled;
-        internal SoundDef scheduledSound;
+        }
+        public List<PawnSquad> PawnSquads
+        {
+            get { return pawnSquads; }
+            set { pawnSquads = value; }
+        }
+        public ScheduledReportManager Reporter { get; }
 
         public DefensivePositionsMapComponent(Map map) : base(map)
         {
@@ -78,29 +84,6 @@ namespace DefensivePositions
             }
         }
 
-        public List<PawnSquad> pawnSquads = new List<PawnSquad>();
-        public List<PawnSquad> PawnSquads
-        {
-            get { return pawnSquads; }
-            set { pawnSquads = value; }
-        }
-
-        private Dictionary<Pawn, PawnSavedPositionHandler> handlers = new Dictionary<Pawn, PawnSavedPositionHandler>();
-
-        private List<PawnSavedPositionHandler> tempHandlerSavingList;
-
-        public PawnSavedPositionHandler GetOrAddPawnHandler(Pawn pawn)
-        {
-            var handler = handlers.TryGetValue(pawn);
-            if (handler == null)
-            {
-                handler = new PawnSavedPositionHandler();
-                handler.AssignOwner(pawn);
-                handlers.Add(pawn, handler);
-            }
-            return handler;
-        }
-
         public override void ExposeData()
         {
             var mode = Scribe.mode;
@@ -123,6 +106,28 @@ namespace DefensivePositions
             }
         }
 
+        public PawnSavedPositionHandler GetOrAddPawnHandler(Pawn pawn)
+        {
+            var handler = handlers.TryGetValue(pawn);
+            if (handler == null)
+            {
+                handler = new PawnSavedPositionHandler();
+                handler.AssignOwner(pawn);
+                handlers.Add(pawn, handler);
+            }
+            return handler;
+        }
+
+        public void ScheduleAdvancedModeToggle()
+        {
+            modeSwitchScheduled = true;
+        }
+
+        public void ScheduleSoundOnCamera(SoundDef sound)
+        {
+            scheduledSound = sound;
+        }
+
         private static List<PawnSavedPositionHandler> HandlerListFromDictionary(Dictionary<Pawn, PawnSavedPositionHandler> dict)
         {
             return dict.Values
@@ -140,17 +145,6 @@ namespace DefensivePositions
         private void DiscardNonSaveWorthySquads()
         {
             pawnSquads.RemoveAll(s => s == null || !s.ShouldBeSaved);
-        }
-
-        // actual switching will occur on next frame- due to possible multiple calls
-        public void ScheduleAdvancedModeToggle()
-        {
-            modeSwitchScheduled = true;
-        }
-
-        public void ScheduleSoundOnCamera(SoundDef sound)
-        {
-            scheduledSound = sound;
         }
 
         internal void ToggleAdvancedMode(bool enable)
