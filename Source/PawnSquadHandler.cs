@@ -17,6 +17,11 @@ namespace DefensivePositions {
 
 		private readonly DefensivePositionsMapComponent mapComponent;
 
+        public static void DiscardNonSaveWorthySquads(List<PawnSquad> pawnSquads)
+        {
+            pawnSquads.RemoveAll(s => s == null || !s.ShouldBeSaved);
+        }
+
         internal static bool ViewingWorldMap {
 			get { return WorldRendererUtility.WorldRendered; }
 		}

@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -28,6 +29,20 @@ namespace DefensivePositions {
 		private float positionMoteExpireTime;
 
 		private DefensivePositionsMapComponent MapComponent => Owner.Map.GetComponent<DefensivePositionsMapComponent>();
+
+        public static List<PawnSavedPositionHandler> HandlerListFromDictionary(Dictionary<Pawn, PawnSavedPositionHandler> dict)
+        {
+            return dict.Values
+                .Where(v => v.ShouldBeSaved)
+                .ToList();
+        }
+
+        public static Dictionary<Pawn, PawnSavedPositionHandler> HandlerListToDictionary(List<PawnSavedPositionHandler> list)
+        {
+            return (list ?? Enumerable.Empty<PawnSavedPositionHandler>())
+                .Where(psp => psp?.Owner != null)
+                .ToDictionary(psp => psp.Owner, v => v);
+        }
 
         public (bool success, int activatedSlot) TrySendPawnToPositionByHotkey() {
 			var index = GetHotkeyControlIndex();
