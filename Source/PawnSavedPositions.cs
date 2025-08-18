@@ -26,7 +26,11 @@ namespace DefensivePositions {
 			Scribe_References.Look(ref owner, "owner");
 			var mode = Scribe.mode;
 			Scribe_Collections.Look(ref savedPositions, "vectorPositions", LookMode.Deep);
-		}
+
+			if (mode == LoadSaveMode.PostLoadInit && savedPositions == null) {
+				savedPositions = ResetSavedPositions();
+            }
+        }
 
 		public List<IntVec3> GetSavedPositions() {
             if (savedPositions != null)
@@ -87,13 +91,15 @@ namespace DefensivePositions {
             }
         }
 
-        internal void AdjustPositionFromRelative(IntVec3 origin)
+        internal void AdjustPositionFromRelative(IntVec3 origin, Rot4 rotation)
         {
             CheckOwnerSpawned();
             for (int i = 0; i < savedPositions.Count; i++)
             {
                 if (savedPositions[i].IsValid)
                 {
+					savedPositions[i] = PrefabUtility.GetAdjustedLocalPosition(savedPositions[i], rotation);
+
                     savedPositions[i] += origin;
                 }
             }

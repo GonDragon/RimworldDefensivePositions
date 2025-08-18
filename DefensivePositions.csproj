@@ -17,7 +17,7 @@
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>Mods\DefensivePositions\v1.6\Assemblies\</OutputPath>
+    <OutputPath>Mods\DefensivePositions\1.6\Assemblies\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>Mods\DefensivePositions\v1.6\Assemblies\</OutputPath>
+    <OutputPath>Mods\DefensivePositions\1.6\Assemblies\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -72,9 +72,10 @@
     <Compile Include="Source\MapComponent.cs" />
     <Compile Include="Source\Gizmo_DefensivePositionButton.cs" />
     <Compile Include="Source\Mod.cs" />
+    <Compile Include="Source\Patches\Gravship_Patches.cs" />
     <Compile Include="Source\PawnSquadSelector.cs" />
     <Compile Include="Source\Settings\ModSettings.cs" />
-    <Compile Include="Source\DraftController_GetGizmos_Patch.cs" />
+    <Compile Include="Source\Patches\DraftController_GetGizmos_Patch.cs" />
     <Compile Include="Source\Gizmo_QuadButtonPanel.cs" />
     <Compile Include="Source\JobDriver_DraftToPosition.cs" />
     <Compile Include="Source\PawnSavedPositions.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Source\PawnSquad.cs" />
     <Compile Include="Source\PawnSquadHandler.cs" />
     <Compile Include="Source\ScheduledReportManager.cs" />
+    <Compile Include="Source\WorldComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

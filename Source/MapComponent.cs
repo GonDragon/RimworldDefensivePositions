@@ -76,14 +76,6 @@ namespace DefensivePositions
             miscHotkeys.OnGUI();
         }
 
-        public override void MapRemoved()
-        {
-            foreach (var handler in handlers.Values)
-            {
-                handler.OnMapDiscarded(map);
-            }
-        }
-
         public override void ExposeData()
         {
             var mode = Scribe.mode;
@@ -92,14 +84,14 @@ namespace DefensivePositions
             if (mode == LoadSaveMode.Saving)
             {
                 // convert to list first- we can get the keys from the handlers at load time
-                tempHandlerSavingList = HandlerListFromDictionary(handlers);
-                DiscardNonSaveWorthySquads();
+                tempHandlerSavingList = PawnSavedPositionHandler.HandlerListFromDictionary(handlers);
+                PawnSquadHandler.DiscardNonSaveWorthySquads(pawnSquads);
             }
             Scribe_Collections.Look(ref tempHandlerSavingList, "savedPositions", LookMode.Deep);
             Scribe_Collections.Look(ref pawnSquads, "pawnSquads", LookMode.Deep);
             if (mode == LoadSaveMode.PostLoadInit)
             {
-                handlers = HandlerListToDictionary(tempHandlerSavingList);
+                handlers = PawnSavedPositionHandler.HandlerListToDictionary(tempHandlerSavingList);
                 tempHandlerSavingList = null;
                 if (PawnSquads == null) PawnSquads = new List<PawnSquad>();
                 LastAdvancedControlUsed = Mathf.Clamp(LastAdvancedControlUsed, 0, PawnSavedPositionHandler.NumAdvancedPositionButtons - 1);
@@ -128,28 +120,35 @@ namespace DefensivePositions
             scheduledSound = sound;
         }
 
-        private static List<PawnSavedPositionHandler> HandlerListFromDictionary(Dictionary<Pawn, PawnSavedPositionHandler> dict)
-        {
-            return dict.Values
-                .Where(v => v.ShouldBeSaved)
-                .ToList();
-        }
-
-        private static Dictionary<Pawn, PawnSavedPositionHandler> HandlerListToDictionary(List<PawnSavedPositionHandler> list)
-        {
-            return (list ?? Enumerable.Empty<PawnSavedPositionHandler>())
-                .Where(psp => psp?.Owner != null)
-                .ToDictionary(psp => psp.Owner, v => v);
-        }
-
-        private void DiscardNonSaveWorthySquads()
-        {
-            pawnSquads.RemoveAll(s => s == null || !s.ShouldBeSaved);
-        }
-
         internal void ToggleAdvancedMode(bool enable)
         {
             AdvancedModeEnabled = enable;
+        }
+
+        /// <summary>
+        /// Copies the current state of this map component to the world component.
+        /// </summary>
+        internal void CopyToWorldComponent()
+        {
+            DefensivePositionsWorldComponent worldComponent = Find.World.GetComponent<DefensivePositionsWorldComponent>();
+            worldComponent.SaveHandlers(PawnSavedPositionHandler.HandlerListFromDictionary(handlers));
+            worldComponent.LastAdvancedControlUsed = LastAdvancedControlUsed;
+            worldComponent.SaveSquads(PawnSquads);
+        }
+
+        /// <summary>
+        /// Restores the state of this map component from the world component.
+        /// </summary>
+        internal void RestoreFromWorldComponent()
+        {
+            DefensivePositionsWorldComponent worldComponent = Find.World.GetComponent<DefensivePositionsWorldComponent>();
+
+            handlers = PawnSavedPositionHandler.HandlerListToDictionary(worldComponent.tempHandlerSavingList);
+            LastAdvancedControlUsed = worldComponent.LastAdvancedControlUsed;
+            PawnSquads = new List<PawnSquad>();
+            PawnSquads.AddRange(worldComponent.PawnSquads);
+
+            //worldComponent.Clear();
         }
     }
 }
