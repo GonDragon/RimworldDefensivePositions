@@ -677,3 +677,4 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/vs,rider,visualstudio,visualstudiocode,windows
+/Mods/DefensivePositions/1.6/Assemblies/DefensivePositions.dll
