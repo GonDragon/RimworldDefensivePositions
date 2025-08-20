@@ -23,7 +23,7 @@ namespace DefensivePositions {
         }
 
         internal static bool ViewingWorldMap {
-			get { return WorldRendererUtility.WorldRendered; }
+			get { return WorldRendererUtility.WorldRendered && !WorldRendererUtility.DrawingMap; }
 		}
 
 		public PawnSquadHandler(DefensivePositionsMapComponent mapComponent) {
