@@ -14,6 +14,17 @@ namespace DefensivePositions
         internal List<PawnSavedPositionHandler> tempHandlerSavingList;
         public int lastAdvancedControlUsed;
         public List<PawnSquad> pawnSquads = new List<PawnSquad>();
+        public bool advancedModeEnabled;
+        public bool AdvancedModeEnabled
+        {
+            get { return advancedModeEnabled; }
+            set { advancedModeEnabled = value; }
+        }
+        public int LastAdvancedControlUsed
+        {
+            get { return lastAdvancedControlUsed; }
+            set { lastAdvancedControlUsed = value; }
+        }
         public DefensivePositionsWorldComponent(World world) : base(world)
         {
         }
@@ -56,12 +67,6 @@ namespace DefensivePositions
             set { pawnSquads = value; }
         }
 
-        public int LastAdvancedControlUsed
-        {
-            get { return lastAdvancedControlUsed; }
-            set { lastAdvancedControlUsed = value; }
-        }
-
         public void SaveHandlers(List<PawnSavedPositionHandler> handlers)
         {
             if (tempHandlerSavingList == null) tempHandlerSavingList = new List<PawnSavedPositionHandler>();
@@ -80,6 +85,7 @@ namespace DefensivePositions
         {
             var mode = Scribe.mode;
             Scribe_Values.Look(ref lastAdvancedControlUsed, "lastAdvancedControlUsed");
+            Scribe_Values.Look(ref advancedModeEnabled, "advancedModeEnabled");
             if (mode == LoadSaveMode.Saving)
             {
                 // convert to list first- we can get the keys from the handlers at load time

@@ -28,7 +28,9 @@ namespace DefensivePositions {
 		private int lastMultiPressSlot;
 		private float positionMoteExpireTime;
 
-		private DefensivePositionsMapComponent MapComponent => Owner.Map.GetComponent<DefensivePositionsMapComponent>();
+        private DefensivePositionsMapComponent MapComponent => Owner.Map.GetComponent<DefensivePositionsMapComponent>();
+
+        private DefensivePositionsWorldComponent WorldComponent => Find.World.GetComponent<DefensivePositionsWorldComponent>();
 
         public static List<PawnSavedPositionHandler> HandlerListFromDictionary(Dictionary<Pawn, PawnSavedPositionHandler> dict)
         {
@@ -55,7 +57,7 @@ namespace DefensivePositions {
 		}
 
 		public Command GetGizmo() {
-			if (MapComponent.AdvancedModeEnabled) {
+			if (WorldComponent.AdvancedModeEnabled) {
 				return new Gizmo_QuadButtonPanel {
 					atlasTexture = Resources.Textures.AdvancedButtonAtlas,
 					iconUVsInactive = Resources.Textures.IconUVsInactive,
@@ -112,7 +114,7 @@ namespace DefensivePositions {
 		}
 
 		public void OnAdvancedGizmoClick(int controlIndex) {
-			MapComponent.LastAdvancedControlUsed = controlIndex;
+            WorldComponent.LastAdvancedControlUsed = controlIndex;
 			HandleControlInteraction(controlIndex);
 		}
 
@@ -147,9 +149,9 @@ namespace DefensivePositions {
 				case Settings.HotkeyMode.FirstSlotOnly:
 					return 0;
 				case Settings.HotkeyMode.LastUsedSlot:
-					return MapComponent.LastAdvancedControlUsed;
+					return WorldComponent.LastAdvancedControlUsed;
 				case Settings.HotkeyMode.MultiPress:
-					if (MapComponent.AdvancedModeEnabled && Time.unscaledTime - lastMultiPressTime < HotkeyMultiPressTimeout) {
+					if (WorldComponent.AdvancedModeEnabled && Time.unscaledTime - lastMultiPressTime < HotkeyMultiPressTimeout) {
 						lastMultiPressSlot = (lastMultiPressSlot + 1) % NumAdvancedPositionButtons;
 					} else {
 						lastMultiPressSlot = 0;

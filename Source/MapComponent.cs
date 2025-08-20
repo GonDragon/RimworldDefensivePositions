@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using RimWorld.Planet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,21 +18,14 @@ namespace DefensivePositions
         private List<PawnSavedPositionHandler> tempHandlerSavingList;
         internal bool modeSwitchScheduled;
         internal SoundDef scheduledSound;
-        public bool advancedModeEnabled;
-        public int lastAdvancedControlUsed;
+        
         public List<PawnSquad> pawnSquads = new List<PawnSquad>();
         internal readonly PawnSquadHandler squadHandler;
         internal readonly MiscHotkeyHandler miscHotkeys;
 
-        public bool AdvancedModeEnabled
+        private DefensivePositionsWorldComponent WorldSave
         {
-            get { return advancedModeEnabled; }
-            set { advancedModeEnabled = value; }
-        }
-        public int LastAdvancedControlUsed
-        {
-            get { return lastAdvancedControlUsed; }
-            set { lastAdvancedControlUsed = value; }
+            get { return Find.World.GetComponent<DefensivePositionsWorldComponent>(); }
         }
         public List<PawnSquad> PawnSquads
         {
@@ -58,7 +52,7 @@ namespace DefensivePositions
             if (Current.ProgramState != ProgramState.Playing) return;
             if (modeSwitchScheduled)
             {
-                ToggleAdvancedMode(!AdvancedModeEnabled);
+                ToggleAdvancedMode(!WorldSave.AdvancedModeEnabled);
                 modeSwitchScheduled = false;
             }
             Reporter.Update();
@@ -79,8 +73,6 @@ namespace DefensivePositions
         public override void ExposeData()
         {
             var mode = Scribe.mode;
-            Scribe_Values.Look(ref advancedModeEnabled, "advancedModeEnabled");
-            Scribe_Values.Look(ref lastAdvancedControlUsed, "lastAdvancedControlUsed");
             if (mode == LoadSaveMode.Saving)
             {
                 // convert to list first- we can get the keys from the handlers at load time
@@ -94,7 +86,6 @@ namespace DefensivePositions
                 handlers = PawnSavedPositionHandler.HandlerListToDictionary(tempHandlerSavingList);
                 tempHandlerSavingList = null;
                 if (PawnSquads == null) PawnSquads = new List<PawnSquad>();
-                LastAdvancedControlUsed = Mathf.Clamp(LastAdvancedControlUsed, 0, PawnSavedPositionHandler.NumAdvancedPositionButtons - 1);
             }
         }
 
@@ -122,7 +113,7 @@ namespace DefensivePositions
 
         internal void ToggleAdvancedMode(bool enable)
         {
-            AdvancedModeEnabled = enable;
+            WorldSave.AdvancedModeEnabled = enable;
         }
 
         /// <summary>
@@ -130,10 +121,8 @@ namespace DefensivePositions
         /// </summary>
         internal void CopyToWorldComponent()
         {
-            DefensivePositionsWorldComponent worldComponent = Find.World.GetComponent<DefensivePositionsWorldComponent>();
-            worldComponent.SaveHandlers(PawnSavedPositionHandler.HandlerListFromDictionary(handlers));
-            worldComponent.LastAdvancedControlUsed = LastAdvancedControlUsed;
-            worldComponent.SaveSquads(PawnSquads);
+            WorldSave.SaveHandlers(PawnSavedPositionHandler.HandlerListFromDictionary(handlers));
+            WorldSave.SaveSquads(PawnSquads);
         }
 
         /// <summary>
@@ -141,12 +130,9 @@ namespace DefensivePositions
         /// </summary>
         internal void RestoreFromWorldComponent()
         {
-            DefensivePositionsWorldComponent worldComponent = Find.World.GetComponent<DefensivePositionsWorldComponent>();
-
-            handlers = PawnSavedPositionHandler.HandlerListToDictionary(worldComponent.tempHandlerSavingList);
-            LastAdvancedControlUsed = worldComponent.LastAdvancedControlUsed;
+            handlers = PawnSavedPositionHandler.HandlerListToDictionary(WorldSave.tempHandlerSavingList);
             PawnSquads = new List<PawnSquad>();
-            PawnSquads.AddRange(worldComponent.PawnSquads);
+            PawnSquads.AddRange(WorldSave.PawnSquads);
 
             //worldComponent.Clear();
         }

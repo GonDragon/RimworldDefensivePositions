@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace DefensivePositions {
@@ -25,6 +26,7 @@ namespace DefensivePositions {
 		private ScheduledReport report;
 
         private readonly DefensivePositionsMapComponent mapComponent;
+        private DefensivePositionsWorldComponent WorldComponent => Find.World.GetComponent<DefensivePositionsWorldComponent>();
         public ScheduledReportManager(DefensivePositionsMapComponent mapComponent) {
             this.mapComponent = mapComponent;
         }
@@ -32,7 +34,7 @@ namespace DefensivePositions {
         public void Update() {
 			if (report == null) return;
 			if (report.reportType == ReportType.SavedPosition) {
-				if (mapComponent.AdvancedModeEnabled) {
+				if (WorldComponent.AdvancedModeEnabled) {
 					Messages.Message(string.Format("DefPos_msg_advancedSet".Translate(), report.controlIndex + 1, report.numPawnsSavedPosition), MessageTypeDefOf.TaskCompletion);
 				} else {
 					Messages.Message(string.Format("DefPos_msg_basicSet".Translate(), report.numPawnsSavedPosition), MessageTypeDefOf.TaskCompletion);
@@ -51,7 +53,7 @@ namespace DefensivePositions {
 				if (report.numPawnsHadTargetPosition == 0) {
 					Messages.Message("DefPos_msg_clearFailed".Translate(), MessageTypeDefOf.RejectInput);
 				} else {
-					if (mapComponent.AdvancedModeEnabled) {
+					if (WorldComponent.AdvancedModeEnabled) {
 						Messages.Message("DefPos_msg_advancedCleared".Translate(report.controlIndex + 1, report.numPawnsHadTargetPosition), MessageTypeDefOf.TaskCompletion);
 					} else {
 						Messages.Message("DefPos_msg_basicCleared".Translate(report.numPawnsHadTargetPosition), MessageTypeDefOf.TaskCompletion);
