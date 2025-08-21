@@ -44,7 +44,7 @@ namespace DefensivePositions
         public override void FinalizeInit()
         {
             base.FinalizeInit();
-            DefensivePositions.Log("DefensivePositionsGameComponent initialized.");
+            DefensivePositions.Log("DefensivePositionsGameComponent initialized in this map.");
         }
 
         public override void MapComponentTick()

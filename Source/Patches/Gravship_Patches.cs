@@ -32,8 +32,6 @@ namespace DefensivePositions
                 origin,
                 engine.ValidSubstructure,
                 crew);
-
-            DefensivePositions.Warning($"Lift Origin: {origin}");
         }
     }
 
@@ -50,8 +48,6 @@ namespace DefensivePositions
             mapComponent.RestoreFromWorldComponent();
 
             tempSave.Clear();
-
-            DefensivePositions.Warning($"Land Origin: {root}");
         }
 
     }
