@@ -25,7 +25,7 @@ namespace DefensivePositions {
 		public void ExposeData() {
 			Scribe_References.Look(ref owner, "owner");
 			var mode = Scribe.mode;
-			Scribe_Collections.Look(ref savedPositions, "vectorPositions", LookMode.Deep);
+			Scribe_Collections.Look(ref savedPositions, "vectorPositions", LookMode.Value);
 
 			if (mode == LoadSaveMode.PostLoadInit && savedPositions == null) {
 				savedPositions = ResetSavedPositions();
