@@ -39,7 +39,7 @@ namespace DefensivePositions {
 			var hits = 0;
 			var activatedSlot = 0;
 			foreach (var pawn in GetColonyPawnsOnVisibleMap()) {
-				if (!pawn.IsColonistPlayerControlled || pawn.Downed) continue;
+				if (!IsColonyPawnPlayerControlled(pawn) || pawn.Downed) continue;
                 var mapComp = pawn.Map.GetComponent<DefensivePositionsMapComponent>();
                 var handler = mapComp.GetOrAddPawnHandler(pawn);
                 var result = handler.TrySendPawnToPositionByHotkey();
@@ -53,6 +53,11 @@ namespace DefensivePositions {
 			} else {
 				Messages.Message("DefPos_msg_nopositionAllSlot".Translate(activatedSlot), MessageTypeDefOf.RejectInput);
 			}
+		}
+
+		private bool IsColonyPawnPlayerControlled(Pawn pawn)
+		{
+			return pawn.IsColonistPlayerControlled || pawn.IsColonyMechPlayerControlled || pawn.IsColonySubhumanPlayerControlled;
 		}
 
 		private void UndraftAllColonists() {
@@ -87,7 +92,7 @@ namespace DefensivePositions {
 			foreach (var map in maps) {
 				if (map == null) continue;
 				foreach (var pawn in map.mapPawns.AllPawnsSpawned) {
-					if (pawn.Faction != playerFaction || !(pawn.IsColonist || pawn.IsColonyMechPlayerControlled)) continue;
+					if (pawn.Faction != playerFaction || !(pawn.IsColonist || pawn.IsColonyMechPlayerControlled || pawn.IsColonySubhumanPlayerControlled)) continue;
 					result.Add(pawn);
 				}
 			}
