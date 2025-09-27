@@ -27,7 +27,7 @@ namespace DefensivePositions {
 
 		private void SelectAllColonists() {
 			Find.Selector.ClearSelection();
-			foreach (var pawn in GetColonistsOnVisibleMap()) {
+			foreach (var pawn in GetColonyPawnsOnVisibleMap()) {
 				// bypass the selection limit
 				Find.Selector.SelectedObjects.Add(pawn);
 				SelectionDrawer.Notify_Selected(pawn);
@@ -38,7 +38,7 @@ namespace DefensivePositions {
 		private void SendAllColonistsToDefensivePosition() {
 			var hits = 0;
 			var activatedSlot = 0;
-			foreach (var pawn in GetColonistsOnVisibleMap()) {
+			foreach (var pawn in GetColonyPawnsOnVisibleMap()) {
 				if (!pawn.IsColonistPlayerControlled || pawn.Downed) continue;
                 var mapComp = pawn.Map.GetComponent<DefensivePositionsMapComponent>();
                 var handler = mapComp.GetOrAddPawnHandler(pawn);
@@ -57,7 +57,7 @@ namespace DefensivePositions {
 
 		private void UndraftAllColonists() {
 			var hits = 0;
-			foreach (var pawn in GetColonistsOnAllMaps()) {
+			foreach (var pawn in GetColonyPawnsOnAllMaps()) {
 				if (pawn.drafter != null && pawn.drafter.Drafted) {
 					pawn.drafter.Drafted = false;
 					hits++;
@@ -71,23 +71,23 @@ namespace DefensivePositions {
 			}
 		}
 
-		private IEnumerable<Pawn> GetColonistsOnVisibleMap() {
-			return GetConlonistsOnMaps(Find.CurrentMap);
+		private IEnumerable<Pawn> GetColonyPawnsOnVisibleMap() {
+			return GetConlonyPanwsOnMaps(Find.CurrentMap);
 		}
 
 		
-		private IEnumerable<Pawn> GetColonistsOnAllMaps() {
-			return GetConlonistsOnMaps(Current.Game.Maps.ToArray());
+		private IEnumerable<Pawn> GetColonyPawnsOnAllMaps() {
+			return GetConlonyPanwsOnMaps(Current.Game.Maps.ToArray());
 		}
 
 		// make sure to crate a new list, because the map pawn list can change during the operation (pawns carried by other pawns)
-		private IEnumerable<Pawn> GetConlonistsOnMaps(params Map[] maps) {
+		private IEnumerable<Pawn> GetConlonyPanwsOnMaps(params Map[] maps) {
 			var result = new List<Pawn>();
 			var playerFaction = Faction.OfPlayer;
 			foreach (var map in maps) {
 				if (map == null) continue;
 				foreach (var pawn in map.mapPawns.AllPawnsSpawned) {
-					if (pawn.Faction != playerFaction || !pawn.IsColonist) continue;
+					if (pawn.Faction != playerFaction || !(pawn.IsColonist || pawn.IsColonyMechPlayerControlled)) continue;
 					result.Add(pawn);
 				}
 			}
