@@ -17,7 +17,6 @@ namespace DefensivePositions
         private Dictionary<Pawn, PawnSavedPositionHandler> handlers = new Dictionary<Pawn, PawnSavedPositionHandler>();
         private List<PawnSavedPositionHandler> tempHandlerSavingList;
         internal bool modeSwitchScheduled;
-        internal SoundDef scheduledSound;
         
         public List<PawnSquad> pawnSquads = new List<PawnSquad>();
         internal readonly PawnSquadHandler squadHandler;
@@ -56,11 +55,6 @@ namespace DefensivePositions
                 modeSwitchScheduled = false;
             }
             Reporter.Update();
-            if (scheduledSound != null)
-            {
-                scheduledSound.PlayOneShotOnCamera();
-                scheduledSound = null;
-            }
         }
 
         public override void MapComponentOnGUI()
@@ -104,11 +98,6 @@ namespace DefensivePositions
         public void ScheduleAdvancedModeToggle()
         {
             modeSwitchScheduled = true;
-        }
-
-        public void ScheduleSoundOnCamera(SoundDef sound)
-        {
-            scheduledSound = sound;
         }
 
         internal void ToggleAdvancedMode(bool enable)

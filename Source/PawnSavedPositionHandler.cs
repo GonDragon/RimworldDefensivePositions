@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.Sound;
 
 namespace DefensivePositions {
 	public interface IDefensivePositionGizmoHandler {
@@ -188,7 +189,7 @@ namespace DefensivePositions {
 		private void DraftToPosition(IntVec3 position) {
 			var job = JobMaker.MakeJob(Resources.Jobs.DPDraftToPosition, position);
 			Owner.jobs.TryTakeOrderedJob(job, JobTag.DraftedOrder);
-			MapComponent.ScheduleSoundOnCamera(SoundDefOf.DraftOn);
+			SoundDefOf.DraftOn.PlayOneShotOnCamera();
 		}
 
 		private void HighlightDefensivePositionLocation(int controlIndex) {
