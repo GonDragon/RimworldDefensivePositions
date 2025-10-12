@@ -119,9 +119,19 @@ namespace DefensivePositions
         /// </summary>
         internal void RestoreFromWorldComponent()
         {
-            handlers = PawnSavedPositionHandler.HandlerListToDictionary(WorldSave.tempHandlerSavingList);
-            PawnSquads = new List<PawnSquad>();
-            PawnSquads.AddRange(WorldSave.PawnSquads);
+            // Merge current map handlers, with world saved handlers
+            // current map are priority
+            handlers = handlers
+                .Concat(PawnSavedPositionHandler.HandlerListToDictionary(WorldSave.tempHandlerSavingList))
+                .GroupBy(kvp => kvp.Key)
+                .ToDictionary(g => g.Key, g => g.First().Value); 
+            
+            // Merge current map squads, with world saved squads
+            PawnSquads = PawnSquads ?? new List<PawnSquad>();
+            var notOverwritenSquads = WorldSave.PawnSquads
+                .Where(squad => !PawnSquads.Any(mapSquad => mapSquad.SquadId == squad.SquadId));
+            
+            PawnSquads.AddRange(notOverwritenSquads);
 
             //worldComponent.Clear();
         }
