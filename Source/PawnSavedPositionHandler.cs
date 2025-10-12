@@ -28,6 +28,14 @@ namespace DefensivePositions {
 		private float lastMultiPressTime;
 		private int lastMultiPressSlot;
 		private float positionMoteExpireTime;
+		
+		private static Action<Pawn,IntVec3> draftToPosition_Delegate;
+
+		internal static Action<Pawn, IntVec3> DraftToPosition_Delegate
+		{
+			get { return draftToPosition_Delegate ?? (draftToPosition_Delegate = DraftToPosition_Base); }
+			set { draftToPosition_Delegate = value; }
+		}
 
         private DefensivePositionsMapComponent MapComponent => Owner.Map.GetComponent<DefensivePositionsMapComponent>();
 
@@ -187,9 +195,14 @@ namespace DefensivePositions {
 		}
 
 		private void DraftToPosition(IntVec3 position) {
-			var job = JobMaker.MakeJob(Resources.Jobs.DPDraftToPosition, position);
-			Owner.jobs.TryTakeOrderedJob(job, JobTag.DraftedOrder);
+			DraftToPosition_Delegate(Owner, position);
 			SoundDefOf.DraftOn.PlayOneShotOnCamera();
+		}
+
+		internal static void DraftToPosition_Base(Pawn owner, IntVec3 position)
+		{
+			var job = JobMaker.MakeJob(Resources.Jobs.DPDraftToPosition, position);
+			owner.jobs.TryTakeOrderedJob(job, JobTag.DraftedOrder);
 		}
 
 		private void HighlightDefensivePositionLocation(int controlIndex) {

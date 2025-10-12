@@ -68,6 +68,8 @@ namespace DefensivePositions {
 					hits++;
 				}
 			}
+
+			if (GearUpAndGoHelper.integrationEnabled) GearUpAndGoHelper.UndraftReturnsPolicy();
 			if (hits > 0) {
 				Messages.Message("DefPos_msg_undraftedAll".Translate(hits), MessageTypeDefOf.SilentInput);
 				SoundDefOf.DraftOff.PlayOneShotOnCamera();
